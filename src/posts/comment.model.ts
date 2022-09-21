@@ -1,8 +1,8 @@
 import mongoose, { ObjectId, Schema } from 'mongoose';
 //INTERFACE
 export interface CommentInterface {
-    title: String;
-    content: String;
+    comment: String;
+    postID: ObjectId;
     creatorID: ObjectId[];
     createdDate: Date;
     updatedDate: Date;
@@ -10,13 +10,13 @@ export interface CommentInterface {
 
 //SCHEMA
 const CommentSchema: Schema = new Schema({
-    title: {
+    comment: {
         type: String,
         required: true,
     },
-    content: {
-        type: String,
-        required: true,
+    postID: {
+        type: mongoose.Types.ObjectId,
+        ref: 'Post',
     },
     creatorID: {
         type: mongoose.Types.ObjectId,
