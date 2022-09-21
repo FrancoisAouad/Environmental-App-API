@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 mongoose
-    .connect('mongodb://127.0.0.1:27017', {
+    .connect(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`, {
         dbName: process.env.DB_NAME,
     })
     .then(() => {

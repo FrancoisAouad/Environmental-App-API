@@ -36,8 +36,7 @@ class Controller {
             const result = await AuthService.login(req.body);
             res.status(200).json({ data: result });
         } catch (e: any) {
-            console.log(e);
-            return res.send(e);
+            next(e);
         }
     }
     async refreshToken(req: Request, res: Response, next: NextFunction) {
@@ -48,8 +47,7 @@ class Controller {
             );
             res.status(200).json({ data: result });
         } catch (e) {
-            console.log(e);
-            return res.send(e);
+            next(e);
         }
     }
     async logout(req: Request, res: Response, next: NextFunction) {
@@ -57,8 +55,7 @@ class Controller {
             await AuthService.logout(req.body);
             res.status(204).json({ success: true });
         } catch (e) {
-            console.log(e);
-            return res.send(e);
+            next(e);
         }
     }
     async forgotPassword(req: Request, res: Response, next: NextFunction) {
@@ -71,8 +68,7 @@ class Controller {
                 data: result,
             });
         } catch (e) {
-            console.log(e);
-            return res.send(e);
+            next(e);
         }
     }
     async resetPassword(req: Request, res: Response, next: NextFunction) {
@@ -88,8 +84,7 @@ class Controller {
                 data: result,
             });
         } catch (e) {
-            console.log(e);
-            return res.send(e);
+            next(e);
         }
     }
     async verifyEmail(req: Request, res: Response, next: NextFunction) {
@@ -99,8 +94,7 @@ class Controller {
                 success: true,
             });
         } catch (e) {
-            console.log(e);
-            return res.send(e);
+            next(e);
         }
     }
 

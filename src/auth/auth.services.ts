@@ -13,12 +13,6 @@ const GlobalService = new globalService();
 class Service {
     constructor() {}
     async signup(body: any, header: any) {
-        // console.log('hit 2');
-        //check if user already exists
-        // const result = await validationSchemas.registerSchema.validateAsync(
-        //     body
-        // );
-        // console.log(result);
         const exists = await userModel.findOne({ email: body.email });
         if (exists)
             throw new error.Conflict(

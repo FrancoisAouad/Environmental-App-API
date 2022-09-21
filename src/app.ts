@@ -2,9 +2,11 @@ import express, { Application } from 'express';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
+import cors from 'cors';
 import compression from 'compression';
 import formdata from 'express-form-data';
 import { sendError, errorHandler } from './utils/handlers/errorHandlers';
+import corsConfig from './config/corsConfig';
 import 'colors';
 dotenv.config();
 class App {
@@ -34,14 +36,13 @@ class App {
     initializeMiddlewares() {
         if (process.env.NODE_ENV == 'development') this.app.use(morgan('dev'));
         this.app.use(compression());
+        this.app.use(cors(corsConfig));
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(formdata.parse());
-        // this.app.use(responseTime());
     }
     //ERROR HANDLERS
     initializeErrorHandlers() {
-        // this.app.use(errorHandler);
         this.app.use(sendError);
         this.app.use(errorHandler);
     }
