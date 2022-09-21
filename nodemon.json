@@ -1,0 +1,14 @@
+{
+    "ignore": [
+        ".gitignore",
+        "package.json",
+        "package-lock.json",
+        "node_modules"
+    ],
+    "watch": ["src"],
+    "ext": "*.ts",
+    "execMap": {
+        "ts": "ts-node"
+    },
+    "exec": "tsc && ts-node ./src/server.ts"
+}
