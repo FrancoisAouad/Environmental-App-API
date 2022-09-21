@@ -7,34 +7,42 @@ import crypto from 'crypto-js';
 import sendMail from '../utils/mailer';
 import configJWT from '../lib/jwt/configJWT';
 import verifyJWT from '../lib/jwt/verifyJWT';
+// import validationSchemas from './auth.validation';
 const GlobalService = new globalService();
 
 class Service {
     constructor() {}
     async signup(body: any, header: any) {
-        const newToken = crypto.lib.WordArray.random(64).toString();
-        console.log('newtoken '.red, newToken);
-
+        // console.log('hit 2');
+        //check if user already exists
+        // const result = await validationSchemas.registerSchema.validateAsync(
+        //     body
+        // );
+        // console.log(result);
         const exists = await userModel.findOne({ email: body.email });
-
         if (exists)
             throw new error.Conflict(
-                `${body.email} has already been registered`
+                `${body.email} has already been registered.`
             );
-        const hashedPassword = await this.hashPassword(body.password);
+        //generate  a base 64 data string to be used to verify user acc
+        const verificationToken = crypto.lib.WordArray.random(64).toString();
 
+        //invoke hash pass method to return the encrypted pass
+        const hashedPassword = await this.hashPassword(body.password);
+        //create user
         const addedUser = await userModel.create({
-            name: body.name,
+            fullname: body.fullname,
+            username: body.username,
             email: body.email,
-            emailToken: newToken,
+            emailToken: verificationToken,
             password: hashedPassword,
         });
-
+        //create accesss and refresh tokens
         const accessToken = configJWT.setAccessToken(addedUser._id.toString());
         const refreshToken = await configJWT.setRefreshToken(
             addedUser._id.toString()
         );
-
+        //send registartion email
         sendMail({
             from: process.env.NODEMAILER_USER,
             to: body.email,
@@ -45,21 +53,23 @@ class Service {
               <br/>
              <p>In order to confirm your email, kindly click the verification link below.</p>
               <br/>
-            <a href="http://${header.host}/api/v1/auth/verify?token=${addedUser.emailToken}">Click here to verify</a>`,
+            <a href="http://${header.host}/api/v1/auth/verify?token=${verificationToken}">Click here to verify</a>`,
         });
+        //return object containing both tokens
         return { accessToken, refreshToken };
     }
     async login(body: any) {
         //check if user exists in db
         const user = await userModel.findOne({ email: body.email });
-        if (!user) throw new error.NotFound('wrong email/pass');
+        if (!user) throw new error.NotFound('Incorrect email/pass');
         //check if hashed password matches with user input
         const isMatch = await this.isValidPassword(
             body.password,
             user.password
         );
         //throw error if pass doesnt match
-        if (isMatch === false) throw new error.Unauthorized('wrong email/pass');
+        if (isMatch === false)
+            throw new error.Unauthorized('Incorrect email/pass');
         //set tokens to be sent to client side
         const accessToken = configJWT.setAccessToken(user._id.toString());
         const refreshToken = await configJWT.setRefreshToken(
@@ -94,13 +104,12 @@ class Service {
     }
     async forgotPassword(header: any) {
         //get logged in user
-        // const authHeader = req.headers['authorization'];
         const id = GlobalService.getUser(header.authorization);
         //check if user exists
         const user: any = await userModel.findOne({ _id: id });
         //return error if user not found
         if (!user) throw new error.Unauthorized('unauthorized');
-
+        //create unique token valid for 10min to verify email
         const passwordToken = await configJWT.setResetPasswordToken(user.id);
 
         sendMail({
@@ -120,18 +129,16 @@ class Service {
     async resetPassword(params: any, body: any, header: any) {
         const { token } = params;
         //validate new pass
-
         //get user id
-        // const authHeader = req.headers['authorization'];
         const id = GlobalService.getUser(header);
         //check if user found
         const user = await userModel.findOne({ _id: id });
         if (!user) throw new error.NotFound('user not found..');
         //verify that the password token is valid
-        // await verifyResetPasswordToken(token);
         //salt and hash new password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(body.password, salt);
+        //replace the old password with the new one
         user.password = hashedPassword;
         //update password in database
         return await user.save();
@@ -152,9 +159,10 @@ class Service {
         return await bcrypt.compare(password, hash);
     }
     async hashPassword(password: string) {
+        //add salt and encrypt password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        console.log(hashedPassword);
+        //return the hashed password
         return hashedPassword;
     }
 }

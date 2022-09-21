@@ -16,6 +16,7 @@ class App {
         this.securityMiddleWares();
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
+        this.initializeErrorHandlers();
     }
     //SERVER
     listen() {
@@ -40,6 +41,7 @@ class App {
     }
     //ERROR HANDLERS
     initializeErrorHandlers() {
+        // this.app.use(errorHandler);
         this.app.use(sendError);
         this.app.use(errorHandler);
     }

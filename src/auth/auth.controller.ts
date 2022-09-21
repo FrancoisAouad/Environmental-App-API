@@ -1,7 +1,12 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
 import authService from './auth.services';
-import configJWT from '../lib/jwt/configJWT';
 import verifyJWT from '../lib/jwt/verifyJWT';
+import { validate } from 'express-validation';
+import {
+    registerSchema,
+    loginSchema,
+    resetPassSchema,
+} from './auth.validation';
 const AuthService = new authService();
 
 class Controller {
@@ -13,6 +18,7 @@ class Controller {
         this.path = '/auth';
         this.initializeRoutes();
     }
+
     async signup(req: Request, res: Response, next: NextFunction) {
         try {
             const result = await AuthService.signup(req.body, req.headers);
@@ -22,8 +28,7 @@ class Controller {
                 data: result,
             });
         } catch (e) {
-            console.log(e);
-            return res.send(e);
+            next(e);
         }
     }
     async login(req: Request, res: Response, next: NextFunction) {
@@ -62,7 +67,7 @@ class Controller {
 
             res.status(200).json({
                 sucess: true,
-                message: `resetpass email sent to ${result.email}`,
+                message: `Reset Password email sent to ${result.email}`,
                 data: result,
             });
         } catch (e) {
@@ -79,7 +84,7 @@ class Controller {
             );
             res.status(200).json({
                 success: true,
-                message: 'password successfully reset.',
+                message: 'Password successfully reset!',
                 data: result,
             });
         } catch (e) {
@@ -100,8 +105,16 @@ class Controller {
     }
 
     initializeRoutes() {
-        this.router.post(`${this.path}/register`, this.signup);
-        this.router.post(`${this.path}/login`, this.login);
+        this.router.post(
+            `${this.path}/register`,
+            validate({ body: registerSchema }),
+            this.signup
+        );
+        this.router.post(
+            `${this.path}/login`,
+            validate({ body: loginSchema }),
+            this.login
+        );
         this.router.post(
             `${this.path}/refreshtoken`,
             verifyJWT.verifyAccessToken,
@@ -122,6 +135,7 @@ class Controller {
         this.router.get(`${this.path}/verifyemail`, this.verifyEmail);
         this.router.patch(
             `${this.path}/resetpassword/:token`,
+            validate({ body: resetPassSchema }),
             this.resetPassword
         );
     }
