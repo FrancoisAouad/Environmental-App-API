@@ -69,7 +69,7 @@ class Controller {
         this.router.get(`${this.path}/:postId`, this.getPostByID);
         this.router.post(
             `${this.path}`,
-            validate({ body: postSchema }),
+            // validate({ body: postSchema }),
             this.addPost
         );
         this.router.delete(`${this.path}/:postId`, this.deletePost);
