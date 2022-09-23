@@ -65,6 +65,22 @@ npm run docker-build
 
 ## Table of Contents
 
-- [Config](https://github.com/FrancoisAouad/Eurisko-Code-Challenge-FrancoisAouad/tree/eurisko/config)
+- [About Service](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/about)
+
+- [Admin Service](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/admin)
+
+- [Auth Service](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/auth)
+
+- [Config](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/config)
+
+- [Lib](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/lib)
+
+- [Middleware](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/middleware)
+
+- [Polls Service](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/polls)
+
+- [Posts Service](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/posts)
+
+- [Utils](https://github.com/FrancoisAouad/Environmental-App-API/tree/main/src/utils)
 
 
