@@ -57,6 +57,26 @@ class Controller {
             next(e);
         }
     }
+    async getPostsCreatedByUsers(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const result = await AdminService.getPostsCreatedByUsers();
+            res.status(200).json({ success: true, data: result });
+        } catch (e) {
+            next(e);
+        }
+    }
+    async getPostsByTags(req: Request, res: Response, next: NextFunction) {
+        try {
+            const result = await AdminService.getPostsByTags(req.query);
+            res.status(200).json({ success: true, data: result });
+        } catch (e) {
+            next(e);
+        }
+    }
 
     initializeRoutes() {
         this.router.get(`${this.path}/:tagId`, this.getTagByID);
@@ -77,6 +97,16 @@ class Controller {
             `${this.admin}${this.path}/:tagId`,
             Role.isAdmin,
             this.deleteTag
+        );
+        this.router.get(
+            `${this.admin}/posts/byusers`,
+            Role.isAdmin,
+            this.getPostsCreatedByUsers
+        );
+        this.router.get(
+            `${this.admin}/posts/bytags`,
+            Role.isAdmin,
+            this.getPostsByTags
         );
     }
 }
