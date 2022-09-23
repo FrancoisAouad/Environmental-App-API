@@ -1,5 +1,6 @@
 import postModel from './post.model';
 import globalService from '../utils/globalService';
+import mongoose from 'mongoose';
 const GlobalService = new globalService();
 
 class Service {
@@ -7,6 +8,7 @@ class Service {
 
     async addPost(body: any, header: any) {
         const id = GlobalService.getUser(header.authorization);
+        if (!body.tags) body.tags = null;
         return await postModel.create({
             title: body.title,
             content: body.content,
@@ -36,14 +38,12 @@ class Service {
     }
     async getUserPosts(header: any) {
         const id = GlobalService.getUser(header.authorization);
-        return postModel.find({ creatorID: id });
+        return postModel.find({ creatorID: new mongoose.Types.ObjectId(id) });
     }
     async getAllPosts() {
         return postModel.aggregate([
             {
-                $sort: {
-                    updatedDate: -1,
-                },
+                $sort: { updatedDate: -1 },
             },
         ]);
     }

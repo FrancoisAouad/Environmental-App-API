@@ -128,6 +128,7 @@ class Service {
     }
     async getPostsByTags(query: any) {
         // const tagsArray = req.query.tags;
+        if (!query.tags) return;
         const x = query.tags.split(',');
 
         let tagIDs: any = [];
