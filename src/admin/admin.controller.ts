@@ -43,7 +43,7 @@ class Controller {
     }
     async editTag(req: Request, res: Response, next: NextFunction) {
         try {
-            await AdminService.editTag(req.body, req.headers, req.params);
+            await AdminService.editTag(req.body, req.params);
             res.status(200).json({ success: true });
         } catch (e) {
             next(e);
@@ -71,6 +71,7 @@ class Controller {
     }
     async getPostsByTags(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log(req.query.tags);
             const result = await AdminService.getPostsByTags(req.query);
             res.status(200).json({ success: true, data: result });
         } catch (e) {
@@ -104,7 +105,7 @@ class Controller {
             this.getPostsCreatedByUsers
         );
         this.router.get(
-            `${this.admin}/posts/bytags`,
+            `${this.admin}/posts`,
             Role.isAdmin,
             this.getPostsByTags
         );

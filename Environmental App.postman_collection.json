@@ -487,6 +487,16 @@
 				{
 					"name": "Get My Posts",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjM5MjI0NzUsImV4cCI6MTY2MzkyNTc3NSwiYXVkIjoiNjMyYWI3NmNiMzdmYmMyMzczNDhmOTdhIiwiaXNzIjoiY2FyRGVhbGVyc2hpcC5jb20ifQ.z9CIeaEZnnplw38xh-DRPGUM1CLrdCTqfnp5LyzVtFI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {

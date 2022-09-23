@@ -6,8 +6,12 @@ class Service {
     constructor() {}
 
     async addTag(body: any) {
+        const exists = await tagModel.findOne({
+            name: body.name.toLowerCase(),
+        });
+        if (exists) throw new error.Conflict('Tag already exists..');
         return await tagModel.create({
-            name: body.name,
+            name: body.name.toLowerCase(),
         });
     }
     async getTagByID(params: any) {
@@ -34,57 +38,21 @@ class Service {
 
         return tagModel.deleteOne({ _id: params.tagId });
     }
-    async editTag(body: any, header: any, params: any) {
+    async editTag(body: any, params: any) {
+        const exists = await tagModel.findOne({
+            name: body.name.toLowerCase(),
+        });
+        if (exists) throw new error.Conflict('Tag already exists..');
         return tagModel.updateOne(
             { _id: params.tagId },
             {
                 $set: {
-                    name: body.name,
+                    name: body.name.toLowerCase(),
                 },
             }
         );
     }
     async getPostsCreatedByUsers() {
-        // let pipeline = [
-        //     {
-        //         //group by creator id
-        //         $group: {
-        //             _id: '$creatorID',
-        //             //push all notes for the same user inside this array
-        //             posts: {
-        //                 $push: {
-        //                     postID: '$_id',
-        //                     title: '$title',
-        //                     content: '$content',
-        //                     likes: '$likes',
-        //                     comments: '$comments',
-        //                     created: '$createdDate',
-        //                     updated: '$updatedDate',
-        //                 },
-        //             },
-        //         },
-        //     },
-        //     {
-        //         //jin user collection
-        //         $lookup: {
-        //             from: 'users',
-        //             localField: '_id',
-        //             foreignField: '_id',
-        //             as: 'userInfo',
-        //         },
-        //     },
-        //     {
-        //         $project: {
-        //             userID: { $arrayElemAt: ['$userInfo._id', 0] },
-        //             fullname: { $arrayElemAt: ['$userInfo.fullname', 0] },
-        //             username: { $arrayElemAt: ['$userInfo.username', 0] },
-        //             email: { $arrayElemAt: ['$userInfo.email', 0] },
-        //             notesCreated: { $size: '$posts' },
-        //             notes: '$posts',
-        //             _id: 0,
-        //         },
-        //     },
-        // ];
         return await postModel.aggregate([
             {
                 //group by creator id
@@ -120,7 +88,7 @@ class Service {
                     username: { $arrayElemAt: ['$userInfo.username', 0] },
                     email: { $arrayElemAt: ['$userInfo.email', 0] },
                     notesCreated: { $size: '$posts' },
-                    notes: '$posts',
+                    posts: '$posts',
                     _id: 0,
                 },
             },
@@ -128,7 +96,8 @@ class Service {
     }
     async getPostsByTags(query: any) {
         // const tagsArray = req.query.tags;
-        if (!query.tags) return;
+
+        if (!query.tags) throw new error.NotFound('no tags selected..');
         const x = query.tags.split(',');
 
         let tagIDs: any = [];
@@ -163,12 +132,19 @@ class Service {
                     _id: 1,
                     title: 1,
                     content: 1,
+                    creatorID: 1,
                     tags: '$tags.name',
-                    fullname: '$fullname',
-                    username: '$username',
-                    email: '$email',
-                    created: '$createdDate',
-                    updated: '$updatedDate',
+                    created: '$createdAt',
+                    updated: '$updatedAt',
+                },
+            },
+            {
+                //join the tags info from the collection
+                $lookup: {
+                    from: 'users',
+                    localField: 'creatorID',
+                    foreignField: '_id',
+                    as: 'creatorID',
                 },
             },
             { $unwind: '$tags' },
@@ -176,15 +152,17 @@ class Service {
                 $group: {
                     _id: '$tags',
                     tag: { $first: '$tags' },
-                    fullname: { $first: '$fullname' },
-                    username: { $first: '$username' },
-                    email: { $first: '$email' },
+                    fullname: { $first: '$creatorID.fullname' },
+                    username: { $first: '$creatorID.username' },
+                    email: { $first: '$creatorID.email' },
                     totalTimes: { $sum: 1 },
                     posts: {
                         $push: {
                             postID: '$_id',
                             title: '$title',
                             content: '$content',
+                            comments: '$comments',
+                            likes: '$likes',
                             created: '$created',
                             updated: '$updated',
                         },
@@ -194,12 +172,14 @@ class Service {
             {
                 $project: {
                     _id: 0,
-                    posts: 1,
-                    fullname: 1,
-                    username: 1,
-                    email: 1,
                     tag: 1,
+                    fullname: { $arrayElemAt: ['$fullname', 0] },
+                    username: { $arrayElemAt: ['$username', 0] },
+                    email: { $arrayElemAt: ['$email', 0] },
                     totalTimes: 1,
+                    comments: 1,
+                    likes: 1,
+                    posts: 1,
                 },
             },
         ];
