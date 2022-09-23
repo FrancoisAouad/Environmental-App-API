@@ -1,4 +1,4 @@
-import mongoose, { ObjectId, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 //admin adds list of tags
 interface TagInterface {
     name: String;
@@ -20,6 +20,6 @@ const TagSchema: Schema = new Schema({
     },
 });
 
-TagSchema.index({ tagSchema: -1 });
-TagSchema.index({ creatorsID: -1 });
+TagSchema.index({ name: 1 });
+TagSchema.index({ updatedDate: -1 });
 export default mongoose.model<TagInterface>('Tag', TagSchema);
