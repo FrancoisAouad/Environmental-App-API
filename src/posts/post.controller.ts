@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction, Router } from 'express';
+import { validate } from 'express-validation';
 import postService from './post.services';
+import { postSchema } from './post.validation';
 const PostService = new postService();
 class Controller {
     private path: string;
@@ -13,7 +15,7 @@ class Controller {
 
     async addPost(req: Request, res: Response, next: NextFunction) {
         try {
-            await PostService.addPost(req.body, req.header);
+            await PostService.addPost(req.body, req.headers);
             res.status(201).json({ success: true });
         } catch (e) {
             next(e);
@@ -29,7 +31,7 @@ class Controller {
     }
     async getUserPosts(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await PostService.getUserPosts(req.params);
+            const result = await PostService.getUserPosts(req.headers);
             res.status(200).json({ success: true, data: result });
         } catch (e) {
             next(e);
@@ -59,13 +61,23 @@ class Controller {
             next(e);
         }
     }
+    //error occured during /myposts endpt
+    //problem that it was after the /:postid, it should be put after
     initializeRoutes() {
-        this.router.get(`/`, this.getAllPosts);
-        this.router.get(`${this.path}/:postId`, this.getPostByID);
+        this.router.get(`${this.path}/`, this.getAllPosts);
         this.router.get(`${this.path}/myposts`, this.getUserPosts);
-        this.router.post(`${this.path}`, this.addPost);
+        this.router.get(`${this.path}/:postId`, this.getPostByID);
+        this.router.post(
+            `${this.path}`,
+            validate({ body: postSchema }),
+            this.addPost
+        );
         this.router.delete(`${this.path}/:postId`, this.deletePost);
-        this.router.put(`${this.path}/:postId`, this.editPost);
+        this.router.put(
+            `${this.path}/:postId`,
+            validate({ body: postSchema }),
+            this.editPost
+        );
     }
 }
 export default Controller;
