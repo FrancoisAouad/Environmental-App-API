@@ -11,7 +11,7 @@ class Service {
         if (!body.tags) body.tags = null;
         return await postModel.create({
             title: body.title,
-            content: body.content,
+            // content: body.content,
             tags: body.tags,
             creatorID: id,
         });
@@ -30,7 +30,7 @@ class Service {
             {
                 $set: {
                     title: body.title,
-                    content: body.content,
+                    // content: body.content,
                     tags: body.tags,
                 },
             }
