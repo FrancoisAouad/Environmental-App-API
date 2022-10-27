@@ -2,7 +2,7 @@
     "name": "environmental-app",
     "version": "0.1.0",
     "description": "Monolith api for environmental app",
-    "main": "server.ts",
+    "main": "src/server.ts",
     "scripts": {
         "start": "nodemon",
         "build": "tsc -p tsconfig.json",

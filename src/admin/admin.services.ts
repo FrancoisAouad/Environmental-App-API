@@ -62,7 +62,7 @@ class Service {
                     posts: {
                         $push: {
                             postID: '$_id',
-                            title: '$title',
+                            // title: '$title',
                             content: '$content',
                             likes: '$likes',
                             comments: '$comments',
@@ -130,7 +130,7 @@ class Service {
             {
                 $project: {
                     _id: 1,
-                    title: 1,
+                    // title: 1,
                     content: 1,
                     creatorID: 1,
                     tags: '$tags.name',
@@ -159,7 +159,7 @@ class Service {
                     posts: {
                         $push: {
                             postID: '$_id',
-                            title: '$title',
+                            // title: '$title',
                             content: '$content',
                             comments: '$comments',
                             likes: '$likes',

@@ -1,0 +1,31 @@
+version: '3.1'
+services:
+    my-api:
+        container_name: envApp
+        restart: always
+        build:
+            context: api
+            dockerfile: Dockerfile
+        ports:
+            - '3000:3000'
+        depends_on:
+            - mp-mongodb
+        networks:
+            - test-network
+
+    mp-mongodb:
+        container_name: mongodb
+        image: mongo:6.0
+        restart: always
+        environment:
+            MONGO_DATA_DIR: /data/db
+            MONGO_LOG_DIR: /dev/null
+        volumes:
+            - mongo-data:/data/db
+        ports:
+            - '27017:27017'
+        command: mongod --logpath=/dev/null # --quiet
+        networks:
+            - test-network
+volumes:
+    mongo-data:

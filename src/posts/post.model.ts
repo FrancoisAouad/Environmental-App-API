@@ -1,7 +1,7 @@
 import mongoose, { ObjectId, Schema } from 'mongoose';
 //INTERFACE
 export interface PostInterface {
-    title: String;
+    // title: String;
     content: String;
     tags: ObjectId[];
     likes: Number;
@@ -15,10 +15,10 @@ export interface PostInterface {
 
 //SCHEMA
 const PostSchema: Schema = new Schema({
-    title: {
-        type: String,
-        required: true,
-    },
+    // title: {
+    //     type: String,
+    //     required: true,
+    // },
     content: {
         type: String,
         required: true,
