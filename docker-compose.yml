@@ -1,7 +1,7 @@
 version: '3.1'
 services:
-    my-api:
-        container_name: envApp
+    env-api:
+        container_name: env-api
         restart: always
         build:
             context: api
@@ -9,23 +9,26 @@ services:
         ports:
             - '3000:3000'
         depends_on:
-            - mp-mongodb
-        networks:
-            - test-network
+            - env-mongo
+            - redis-env
 
-    mp-mongodb:
-        container_name: mongodb
+    env-mongo:
+        container_name: env-mongo
         image: mongo:6.0
         restart: always
         environment:
             MONGO_DATA_DIR: /data/db
             MONGO_LOG_DIR: /dev/null
-        volumes:
-            - mongo-data:/data/db
         ports:
             - '27017:27017'
         command: mongod --logpath=/dev/null # --quiet
-        networks:
-            - test-network
-volumes:
-    mongo-data:
+
+    redis-env:
+        container_name: redis-env
+        image: redis:6.2.7
+        restart: always
+        ports:
+            - "6379:6379"
+       
+        
+        

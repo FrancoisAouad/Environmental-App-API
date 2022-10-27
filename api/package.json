@@ -7,8 +7,6 @@
         "start": "nodemon",
         "build": "tsc -p tsconfig.json",
         "clean": "rm -r node_modules && package-lock.json",
-        "redis": "redis-server",
-        "mongo": "mongod",
         "docker-build": "docker build -t environmental-app .",
         "docker-list": "docker ls -a",
         "install-dev": "npm i"
